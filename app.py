@@ -17,10 +17,11 @@ from nltk.util import ngrams
 from collections import Counter
 
 # --- Page Config ---
-st.set_page_config(page_title="App Scout - Pencari Peluang Blue Ocean", layout="wide", page_icon="🚀")
+st.set_page_config(page_title="App Scout - Pencari Peluang Blue Ocean", layout="wide")
 
 # --- Custom Styling ---
 st.markdown("""
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
     <style>
     .main {
         background-color: #f8f9fa;
@@ -28,6 +29,18 @@ st.markdown("""
     }
     h1, h2, h3 {
         color: #2c3e50;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .material-symbols-rounded {
+        font-size: 24px;
+        color: #444;
+        vertical-align: middle;
+    }
+    .hero-icon {
+        font-size: 32px !important;
+        color: #1565c0;
     }
     /* Card-like styling for containers */
     [data-testid="stVerticalBlock"] > [style*="flex-direction: column;"] > [data-testid="stVerticalBlock"] {
@@ -108,7 +121,7 @@ def fetch_keyword_data(keywords, country, lang):
     base_keywords = [k.strip() for k in keywords.split(",")]
     expanded_keywords = set(base_keywords)
     
-    with st.spinner("🔄 Mengembangkan kata kunci (Pro Feature)..."):
+    with st.spinner("Mengembangkan kata kunci (Pro Feature)..."):
         if suggestions:
             for k in base_keywords:
                 try:
@@ -178,14 +191,14 @@ with st.sidebar:
     st.caption("Intelligence Blue Ocean Tool")
     st.divider()
     
-    st.subheader("🌍 Konfigurasi")
+    st.subheader("Konfigurasi")
     country = st.text_input("Negara (Kode)", value="id", help="Contoh: id, us, sg")
     lang = st.text_input("Bahasa (Kode)", value="id", help="Contoh: id, en")
     st.divider()
-    st.info("💡 **Tips:** Gunakan kata kunci spesifik untuk hasil yang lebih baik.")
+    st.info("Tips: Gunakan kata kunci spesifik untuk hasil yang lebih baik.")
 
 # Main Tabs
-tab1, tab2 = st.tabs(["🏹 Pemburu Celah Pasar", "🕵️ Mata-mata Kompetitor"])
+tab1, tab2 = st.tabs(["Market Gap Hunter", "Competitor Spy"])
 
 # ... (Previous code remains)
 
@@ -196,17 +209,17 @@ def get_market_decision(df):
     opportunities = len(df[df['Rating'] < 4.0])
     
     if opportunities >= 3 and avg_installs > 10000:
-        return "✅ POTENSI TINGGI (High Potential)", "green", \
-               f"Ditemukan {opportunities} aplikasi dengan permintaan tinggi tapi kualitas buruk (Rating < 4.0). Pasar ini 'haus' akan aplikasi yang lebih baik."
+        return "POTENSI TINGGI (High Potential)", "green", \
+               f"Ditemukan {opportunities} aplikasi dengan permintaan tinggi tapi kualitas buruk (Rating < 4.0). Pasar ini 'haus' akan aplikasi yang lebih baik.", "check_circle"
     elif avg_installs > 500000 and avg_rating > 4.2:
-        return "⚠️ PERSAINGAN KETAT (Saturated)", "orange", \
-               "Pasar sudah dikuasai aplikasi raksasa dengan kualitas bagus. Kecuali Anda punya fitur revolusioner, akan sulit bersaing."
+        return "PERSAINGAN KETAT (Saturated)", "orange", \
+               "Pasar sudah dikuasai aplikasi raksasa dengan kualitas bagus. Kecuali Anda punya fitur revolusioner, akan sulit bersaing.", "warning"
     elif avg_installs < 5000:
-        return "❌ PASAR SEPI (Niche/Low Demand)", "red", \
-               "Volume pencarian/instalasi terlalu kecil. Mungkin kata kunci terlalu spesifik atau memang tidak ada peminat."
+        return "PASAR SEPI (Niche/Low Demand)", "red", \
+               "Volume pencarian/instalasi terlalu kecil. Mungkin kata kunci terlalu spesifik atau memang tidak ada peminat.", "cancel"
     else:
-        return "⚖️ NETRAL / MODERAT", "blue", \
-               "Ada peluang, tapi tidak terlalu mencolok. Perlu riset lebih dalam pada fitur spesifik."
+        return "NETRAL / MODERAT", "blue", \
+               "Ada peluang, tapi tidak terlalu mencolok. Perlu riset lebih dalam pada fitur spesifik.", "info"
 
 def get_competitor_decision(detail, rv_df):
     score = detail.get('score', 0)
@@ -219,21 +232,20 @@ def get_competitor_decision(detail, rv_df):
         velocity = len(last_30)
     
     if score < 3.8 and installs > 50000:
-        return "⚔️ SERANG SEKARANG (Vulnerable)", "success", \
-               f"Musuh sedang lemah! Rating {score:.1f} dengan banyak user ({installs}) artinya user kecewa tapi tidak ada pilihan lain. Masuk dan tawarkan solusi yang lebih stabil."
+        return "SERANG SEKARANG (Vulnerable)", "success", \
+               f"Musuh sedang lemah! Rating {score:.1f} dengan banyak user ({installs}) artinya user kecewa tapi tidak ada pilihan lain. Masuk dan tawarkan solusi yang lebih stabil.", "gavel"
     elif velocity > 100:
-        return "🔥 TUNGGANGI OMBAK (Viral)", "warning", \
-               f"Kompetitor sedang viral ({velocity} review/bulan). Jangan langsung *head-to-head*, tapi buat versi 'alternatif' atau 'lite' untuk mengambil tumpahan user mereka."
+        return "TUNGGANGI OMBAK (Viral)", "warning", \
+               f"Kompetitor sedang viral ({velocity} review/bulan). Jangan langsung *head-to-head*, tapi buat versi 'alternatif' atau 'lite' untuk mengambil tumpahan user mereka.", "trending_up"
     elif score > 4.5 and installs > 1000000:
-        return "🛡️ HINDARI (Dominant Leader)", "error", \
-               "Raja pasar yang sangat kuat. User puas (Rating 4.5+). Sangat mahal untuk merebut user mereka kecuali Anda punya budget marketing besar."
+        return "HINDARI (Dominant Leader)", "error", \
+               "Raja pasar yang sangat kuat. User puas (Rating 4.5+). Sangat mahal untuk merebut user mereka kecuali Anda punya budget marketing besar.", "shield"
     else:
-        return "👀 AMATI (Monitor)", "info", \
-               "Kompetitor standar. Cari celah spesifik di fitur yang tidak mereka miliki (lihat tab 'Kelemahan')."
+        return "AMATI (Monitor)", "info", \
+               "Kompetitor standar. Cari celah spesifik di fitur yang tidak mereka miliki (lihat tab 'Kelemahan').", "visibility"
 
 with tab1:
-    # ... (Header & Inputs remain)
-    st.title("🏹 Pemburu Celah Pasar")
+    st.title("Pemburu Celah Pasar")
     st.markdown("Temukan *keyword* dengan permintaan tinggi namun persaingan rendah.")
     
     if 'market_data' not in st.session_state: st.session_state.market_data = None
@@ -245,7 +257,7 @@ with tab1:
         with col_in2:
             st.write("") 
             st.write("") 
-            analyze_btn = st.button("🚀 Analisis Pasar", use_container_width=True)
+            analyze_btn = st.button("Analisis Pasar", use_container_width=True)
 
     if analyze_btn:
         df = fetch_keyword_data(kw_input, country, lang)
@@ -257,35 +269,41 @@ with tab1:
             st.divider()
             
             # --- NEW: DECISION BLOCK ---
-            dec_title, dec_color, dec_reason = get_market_decision(df)
+            dec_title, dec_color, dec_reason, dec_icon = get_market_decision(df)
+            
+            # Map simple colors to hex for inline style
+            bg_map = {'green': '#e8f5e9', 'orange': '#fff3e0', 'red': '#ffebee', 'blue': '#e3f2fd'}
+            color_map = {'green': '#2e7d32', 'orange': '#ef6c00', 'red': '#c62828', 'blue': '#1565c0'}
+            
             st.markdown(f"""
-            <div style="padding:15px; border-radius:10px; background-color:{'#e8f5e9' if dec_color=='green' else '#fff3e0' if dec_color=='orange' else '#ffebee' if dec_color=='red' else '#e3f2fd'}; border: 1px solid {dec_color}; margin-bottom:20px;">
-                <h3 style="margin:0; color:{dec_color};">{dec_title}</h3>
-                <p style="margin-top:5px; margin-bottom:0; color:#333;"><b>💡 Analisis AI:</b> {dec_reason}</p>
+            <div style="padding:15px; border-radius:10px; background-color:{bg_map.get(dec_color, '#f5f5f5')}; border: 1px solid {color_map.get(dec_color, '#999')}; margin-bottom:20px;">
+                <h3 style="margin:0; color:{color_map.get(dec_color, '#333')}; display:flex; align-items:center; gap:10px;">
+                    <span class="material-symbols-rounded">{dec_icon}</span> {dec_title}
+                </h3>
+                <p style="margin-top:5px; margin-bottom:0; color:#333;"><b>Analisis AI:</b> {dec_reason}</p>
             </div>
             """, unsafe_allow_html=True)
             # ---------------------------
 
             # Summary Metrics
             m1, m2, m3, m4 = st.columns(4)
-            m1.metric("Total Aplikasi", len(df), help="Total aplikasi yang ditemukan dari pencarian kata kunci ini.")
-            m2.metric("Rata-rata Rating", f"{df['Rating'].mean():.1f} ⭐", help="Nilai rata-rata kepuasan pengguna di pasar ini.")
-            m3.metric("Rata-rata Install", f"{df['Instalasi'].mean():,.0f}", help="Indikator seberapa besar pasar/permintaannya.")
-            m4.metric("Kompetitor Lemah", len(df[df['Rating'] < 4.0]), help="Jumlah aplikasi dengan Rating < 4.0. Target empuk untuk disalip!")
+            m1.metric("Total Aplikasi", len(df), help="Total aplikasi yang ditemukan.")
+            m2.metric("Rating Rata-rata", f"{df['Rating'].mean():.1f}", help="Kepuasan rata-rata.")
+            m3.metric("Install Rata-rata", f"{df['Instalasi'].mean():,.0f}", help="Besar pasar.")
+            m4.metric("Kompetitor Lemah", len(df[df['Rating'] < 4.0]), help="Target empuk!")
 
             st.write("")
             
-            with st.expander("📚 Panduan Pemula: Cara Membaca Data Ini (Klik untuk buka)"):
+            with st.expander("📚 Panduan Membaca Data"):
                 st.markdown("""
-                **Apa yang harus saya cari?**
-                1.  **Cari 'Kompetitor Lemah'**: Jika banyak aplikasi ratingnya merah (< 4.0), artinya user kecewa. Buat aplikasi yang lebih bagus, Anda pasti menang.
-                2.  **Cek 'Rata-rata Install'**: Jika angkanya besar (jutaan) tapi ratingnya jelek, itu adalah **"Tambang Emas"**. Permintaan tinggi, suplai buruk.
-                3.  **Zombie App**: Aplikasi yang sudah lama tidak diupdate. Biasanya fiturnya jadul. Anda bisa masuk dengan fitur modern.
-                4.  **Skor ASO (Toko)**: Seberapa jago kompetitor mengatur judul & deskripsi. Jika skor mereka rendah, aplikasi Anda bisa lebih mudah muncul di pencarian paling atas jika dioptimasi.
+                **Tips Cepat:**
+                1.  **Kompetitor Lemah**: Rating < 4.0. Target empuk.
+                2.  **Tambang Emas**: Install Jutaan + Rating Rendah.
+                3.  **Zombie App**: Tidak update > 2 tahun.
                 """)
 
             # Content Tabs
-            res_tab1, res_tab2, res_tab3 = st.tabs(["📊 Visualisasi", "💡 Peluang Emas", "📋 Data Lengkap"])
+            res_tab1, res_tab2, res_tab3 = st.tabs(["Visualisasi", "Peluang Emas", "Data Lengkap"])
             
             with res_tab1:
                 c1, c2 = st.columns(2)
@@ -307,42 +325,42 @@ with tab1:
             with res_tab2:
                 # Opportunities Logic (Relaxed Criteria)
                 opp_df = df[(df['Rating'] < 4.2) & (df['Instalasi'] > 10000)].copy()
-                opp_df['Tipe_Peluang'] = "📉 Kualitas Rendah, Demand Cukup"
+                opp_df['Tipe_Peluang'] = "Kualitas Rendah, Demand Cukup"
                 
                 zombie_df = df[df['Zombie App']].copy()
-                zombie_df['Tipe_Peluang'] = "🧟 Zombie App (Lama Tidak Update)"
+                zombie_df['Tipe_Peluang'] = "Zombie App (Lama Tidak Update)"
                 
                 low_aso = df[df['Skor ASO'] < 50].copy()
-                low_aso['Tipe_Peluang'] = "🔍 ASO Lemah (Mudah Disalip)"
+                low_aso['Tipe_Peluang'] = "ASO Lemah (Mudah Disalip)"
                 
                 final_opp = pd.concat([opp_df, zombie_df, low_aso]).drop_duplicates(subset=['App ID'])
                 
                 if not final_opp.empty:
-                    st.success(f"Ditemukan {len(final_opp)} aplikasi yang bisa Anda saingi!")
+                    st.success(f"Ditemukan {len(final_opp)} aplikasi target!")
                     for _, row in final_opp.iterrows():
                         st.markdown(f"""
                             <div class="opportunity-card">
-                                <div style="display:flex; justify-content:space-between;">
-                                    <h4>{row['Judul']}</h4>
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <h4 style="margin:0;"><span class="material-symbols-rounded" style="font-size:18px; vertical-align:middle;">target</span> {row['Judul']}</h4>
                                     <span class="badge-tier">{row.get('Tier Kompetitor', 'N/A')}</span>
                                 </div>
-                                <p style="margin-bottom:10px;"><i>{row['App ID']}</i></p>
-                                <p><b>🎯 Celah:</b> {row['Tipe_Peluang']}</p>
+                                <p style="margin-bottom:10px; font-size:0.8em; color:#777;"><i>{row['App ID']}</i></p>
+                                <p><b>Celah:</b> {row['Tipe_Peluang']}</p>
                                 <hr style="margin:8px 0; border-top:1px solid #eee;">
-                                <div style="display:flex; gap:15px; font-size:0.9rem;">
-                                    <span>⭐ {row['Rating']:.1f}</span>
-                                    <span>📥 {row['Instalasi']:,}</span>
-                                    <span>🛠 ASO {row['Skor ASO']}</span>
+                                <div style="display:flex; gap:15px; font-size:0.9rem; align-items:center;">
+                                    <span title="Rating"><span class="material-symbols-rounded" style="font-size:16px;">star</span> {row['Rating']:.1f}</span>
+                                    <span title="Installs"><span class="material-symbols-rounded" style="font-size:16px;">download</span> {row['Instalasi']:,}</span>
+                                    <span title="ASO Score"><span class="material-symbols-rounded" style="font-size:16px;">build</span> {row['Skor ASO']}</span>
                                 </div>
                             </div>
                         """, unsafe_allow_html=True)
                         
-                        if st.button(f"🕵️ Mata-matai {row['Judul'][:15]}...", key=f"btn_{row['App ID']}", help="Analisis detail aplikasi ini di Tab Mata-mata Kompetitor"):
+                        if st.button(f"Mata-matai {row['Judul'][:15]}...", key=f"btn_{row['App ID']}", help="Analisis detail aplikasi ini"):
                             st.session_state.current_app_id = row['App ID']
                             st.session_state.analyze_active = True
-                            st.toast(f"✅ Siap! Silakan pindah ke tab 'Mata-mata Kompetitor' untuk analisis detail {row['Judul']}.")
+                            st.toast(f"Siap! Pindah ke tab Competitor Spy untuk analisis {row['Judul']}.")
                 else:
-                    st.info("Belum ada peluang yang sangat menonjol. Coba kata kunci lain.")
+                    st.info("Belum ada peluang yang sangat menonjol.")
 
             with res_tab3:
                 st.dataframe(df, use_container_width=True)
@@ -352,7 +370,7 @@ with tab1:
             st.warning("Tidak ada data ditemukan.")
 
 with tab2:
-    st.title("🕵️ Mata-mata Kompetitor")
+    st.markdown('<h1>Mata-mata Kompetitor</h1>', unsafe_allow_html=True)
     st.markdown("Analisis mendalam kelemahan dan strategi lawan.")
     
     if 'current_app_id' not in st.session_state: st.session_state.current_app_id = "com.whatsapp"
@@ -365,7 +383,7 @@ with tab2:
         with c_in2:
             st.write("")
             st.write("")
-            spy_btn = st.button("🔍 Mulai Mata-matai", use_container_width=True)
+            spy_btn = st.button("Mulai Mata-matai", use_container_width=True) # Removed emoji
 
     if spy_btn:
         st.session_state.current_app_id = app_id_input
@@ -381,15 +399,26 @@ with tab2:
                 rv_df_trend = pd.DataFrame(rv_data_trend)
                 
                 # --- DECISION LOGIC FOR TAB 2 ---
-                comp_dec, comp_color, comp_msg = get_competitor_decision(detail, rv_df_trend)
-                if comp_color == 'success':
-                    st.success(f"**{comp_dec}**\n\n{comp_msg}")
-                elif comp_color == 'warning':
-                    st.warning(f"**{comp_dec}**\n\n{comp_msg}")
-                elif comp_color == 'error':
-                    st.error(f"**{comp_dec}**\n\n{comp_msg}")
-                else:
-                    st.info(f"**{comp_dec}**\n\n{comp_msg}")
+                dec_title, dec_color, dec_reason, dec_icon = get_competitor_decision(detail, rv_df_trend)
+                
+                # Map simple colors to hex
+                bg_map = {'green': '#e8f5e9', 'orange': '#fff3e0', 'red': '#ffebee', 'blue': '#e3f2fd'} # Note: tab 2 used diff logic names, let's align
+                # get_competitor_decision returns success/warning/error/info
+                # Mapping Streamlit status to colors: success->green, warning->orange, error->red, info->blue
+                status_map = {'success': 'green', 'warning': 'orange', 'error': 'red', 'info': 'blue'}
+                final_color = status_map.get(dec_color, 'blue')
+                
+                bg_map = {'green': '#e8f5e9', 'orange': '#fff3e0', 'red': '#ffebee', 'blue': '#e3f2fd'}
+                color_map = {'green': '#2e7d32', 'orange': '#ef6c00', 'red': '#c62828', 'blue': '#1565c0'}
+
+                st.markdown(f"""
+                <div style="padding:15px; border-radius:10px; background-color:{bg_map.get(final_color)}; border: 1px solid {color_map.get(final_color)}; margin-bottom:20px;">
+                    <h3 style="margin:0; color:{color_map.get(final_color)}; display:flex; align-items:center; gap:10px;">
+                        <span class="material-symbols-rounded">{dec_icon}</span> {dec_title}
+                    </h3>
+                    <p style="margin-top:5px; margin-bottom:0; color:#333;"><b>Analisis AI:</b> {dec_reason}</p>
+                </div>
+                """, unsafe_allow_html=True)
                 # -------------------------------
 
                 # --- Top Section: Profile ---
